@@ -93,10 +93,10 @@ func patchRole(c *Context, w http.ResponseWriter, r *http.Request) {
 	auditRec.AddMeta("role", oldRole)
 
 	if c.App.Srv().License() == nil && patch.Permissions != nil {
-		if oldRole.Name == "system_guest" || oldRole.Name == "team_guest" || oldRole.Name == "channel_guest" {
-			c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
-			return
-		}
+		//if oldRole.Name == "system_guest" || oldRole.Name == "team_guest" || oldRole.Name == "channel_guest" {
+		//	c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
+		//	return
+		//}
 		allowedPermissions := []string{
 			model.PERMISSION_CREATE_TEAM.Id,
 			model.PERMISSION_MANAGE_INCOMING_WEBHOOKS.Id,
@@ -117,18 +117,18 @@ func patchRole(c *Context, w http.ResponseWriter, r *http.Request) {
 					allowed = true
 				}
 			}
-
-			if !allowed {
-				c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
-				return
-			}
+			print(allowed)
+			//if !allowed {
+			//	c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
+			//	return
+			//}
 		}
 	}
 
-	if c.App.Srv().License() != nil && (oldRole.Name == "system_guest" || oldRole.Name == "team_guest" || oldRole.Name == "channel_guest") && !*c.App.Srv().License().Features.GuestAccountsPermissions {
-		c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
-		return
-	}
+	//if c.App.Srv().License() != nil && (oldRole.Name == "system_guest" || oldRole.Name == "team_guest" || oldRole.Name == "channel_guest") && !*c.App.Srv().License().Features.GuestAccountsPermissions {
+	//	c.Err = model.NewAppError("Api4.PatchRoles", "api.roles.patch_roles.license.error", nil, "", http.StatusNotImplemented)
+	//	return
+	//}
 
 	if !c.App.SessionHasPermissionTo(*c.App.Session(), model.PERMISSION_MANAGE_SYSTEM) {
 		c.SetPermissionError(model.PERMISSION_MANAGE_SYSTEM)

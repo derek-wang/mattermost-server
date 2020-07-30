@@ -29,6 +29,7 @@ type Store interface {
 	Channel() ChannelStore
 	Post() PostStore
 	User() UserStore
+	Dealer() DealerStore
 	Bot() BotStore
 	Audit() AuditStore
 	ClusterDiscovery() ClusterDiscoveryStore
@@ -358,6 +359,13 @@ type UserStore interface {
 	DeactivateGuests() ([]string, *model.AppError)
 	AutocompleteUsersInChannel(teamId, channelId, term string, options *model.UserSearchOptions) (*model.UserAutocompleteInChannel, *model.AppError)
 	GetKnownUsers(userID string) ([]string, *model.AppError)
+}
+
+type DealerStore interface {
+	Get(id string) (*model.Dealer, *model.AppError)
+	GetAll() ([]*model.Dealer, *model.AppError)
+	Save(user *model.Dealer) (*model.Dealer, *model.AppError)
+	Update(user *model.Dealer, allowRoleUpdate bool) (*model.DealerUpdate, *model.AppError)
 }
 
 type BotStore interface {

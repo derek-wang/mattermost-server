@@ -64,8 +64,11 @@ func GetMockStoreForSetupFunctions() *mocks.Store {
 
 	teamStore := mocks.TeamStore{}
 
+	dealerStore := mocks.DealerStore{}
+
 	mockStore.On("System").Return(&systemStore)
 	mockStore.On("User").Return(&userStore)
+	mockStore.On("Dealer").Return(&dealerStore)
 	mockStore.On("Post").Return(&postStore)
 	mockStore.On("Status").Return(&statusStore)
 	mockStore.On("Channel").Return(&channelStore)

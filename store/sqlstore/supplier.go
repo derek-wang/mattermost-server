@@ -73,6 +73,7 @@ type SqlSupplierStores struct {
 	channel              store.ChannelStore
 	post                 store.PostStore
 	user                 store.UserStore
+	dealer               store.DealerStore
 	bot                  store.BotStore
 	audit                store.AuditStore
 	cluster              store.ClusterDiscoveryStore
@@ -141,6 +142,7 @@ func NewSqlSupplier(settings model.SqlSettings, metrics einterfaces.MetricsInter
 	supplier.stores.channel = newSqlChannelStore(supplier, metrics)
 	supplier.stores.post = newSqlPostStore(supplier, metrics)
 	supplier.stores.user = newSqlUserStore(supplier, metrics)
+	supplier.stores.dealer = newSqlDealerStore(supplier, metrics)
 	supplier.stores.bot = newSqlBotStore(supplier, metrics)
 	supplier.stores.audit = newSqlAuditStore(supplier)
 	supplier.stores.cluster = newSqlClusterDiscoveryStore(supplier)
@@ -187,6 +189,7 @@ func NewSqlSupplier(settings model.SqlSettings, metrics einterfaces.MetricsInter
 	supplier.stores.channel.(*SqlChannelStore).createIndexesIfNotExists()
 	supplier.stores.post.(*SqlPostStore).createIndexesIfNotExists()
 	supplier.stores.user.(*SqlUserStore).createIndexesIfNotExists()
+	supplier.stores.dealer.(*SqlDealerStore).createIndexesIfNotExists()
 	supplier.stores.bot.(*SqlBotStore).createIndexesIfNotExists()
 	supplier.stores.audit.(*SqlAuditStore).createIndexesIfNotExists()
 	supplier.stores.compliance.(*SqlComplianceStore).createIndexesIfNotExists()
@@ -1062,6 +1065,10 @@ func (ss *SqlSupplier) Post() store.PostStore {
 
 func (ss *SqlSupplier) User() store.UserStore {
 	return ss.stores.user
+}
+
+func (ss *SqlSupplier) Dealer() store.DealerStore {
+	return ss.stores.dealer
 }
 
 func (ss *SqlSupplier) Bot() store.BotStore {

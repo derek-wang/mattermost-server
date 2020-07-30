@@ -91,6 +91,8 @@ type User struct {
 	BotLastIconUpdate      int64     `db:"-" json:"bot_last_icon_update,omitempty"`
 	TermsOfServiceId       string    `db:"-" json:"terms_of_service_id,omitempty"`
 	TermsOfServiceCreateAt int64     `db:"-" json:"terms_of_service_create_at,omitempty"`
+	MobileNumber           string    `json:"mobile_number"`
+	DealerId               string    `json:"dealer_id"`
 }
 
 type UserUpdate struct {
@@ -99,17 +101,18 @@ type UserUpdate struct {
 }
 
 type UserPatch struct {
-	Username    *string   `json:"username"`
-	Password    *string   `json:"password,omitempty"`
-	Nickname    *string   `json:"nickname"`
-	FirstName   *string   `json:"first_name"`
-	LastName    *string   `json:"last_name"`
-	Position    *string   `json:"position"`
-	Email       *string   `json:"email"`
-	Props       StringMap `json:"props,omitempty"`
-	NotifyProps StringMap `json:"notify_props,omitempty"`
-	Locale      *string   `json:"locale"`
-	Timezone    StringMap `json:"timezone"`
+	Username     *string   `json:"username"`
+	Password     *string   `json:"password,omitempty"`
+	Nickname     *string   `json:"nickname"`
+	FirstName    *string   `json:"first_name"`
+	LastName     *string   `json:"last_name"`
+	Position     *string   `json:"position"`
+	Email        *string   `json:"email"`
+	Props        StringMap `json:"props,omitempty"`
+	NotifyProps  StringMap `json:"notify_props,omitempty"`
+	Locale       *string   `json:"locale"`
+	Timezone     StringMap `json:"timezone"`
+	MobileNumber *string   `json:"mobile_number"`
 }
 
 type UserAuth struct {
@@ -263,15 +266,15 @@ func (u *User) IsValid() *AppError {
 		return InvalidUserError("nickname", u.Id)
 	}
 
-	if utf8.RuneCountInString(u.Position) > USER_POSITION_MAX_RUNES {
+	if len(u.Position) == 0 || utf8.RuneCountInString(u.Position) > USER_POSITION_MAX_RUNES {
 		return InvalidUserError("position", u.Id)
 	}
 
-	if utf8.RuneCountInString(u.FirstName) > USER_FIRST_NAME_MAX_RUNES {
+	if len(u.FirstName) == 0 || utf8.RuneCountInString(u.FirstName) > USER_FIRST_NAME_MAX_RUNES {
 		return InvalidUserError("first_name", u.Id)
 	}
 
-	if utf8.RuneCountInString(u.LastName) > USER_LAST_NAME_MAX_RUNES {
+	if len(u.LastName) == 0 || utf8.RuneCountInString(u.LastName) > USER_LAST_NAME_MAX_RUNES {
 		return InvalidUserError("last_name", u.Id)
 	}
 
@@ -293,6 +296,10 @@ func (u *User) IsValid() *AppError {
 
 	if !IsValidLocale(u.Locale) {
 		return InvalidUserError("locale", u.Id)
+	}
+
+	if len(u.MobileNumber) == 0 {
+		return InvalidUserError("mobile_number", u.Id)
 	}
 
 	return nil
@@ -335,6 +342,8 @@ func (u *User) PreSave() {
 	u.FirstName = SanitizeUnicode(u.FirstName)
 	u.LastName = SanitizeUnicode(u.LastName)
 	u.Nickname = SanitizeUnicode(u.Nickname)
+	u.MobileNumber = SanitizeUnicode(u.MobileNumber)
+	u.Position = SanitizeUnicode(u.Position)
 
 	u.Username = NormalizeUsername(u.Username)
 	u.Email = NormalizeEmail(u.Email)
@@ -374,6 +383,7 @@ func (u *User) PreUpdate() {
 	u.LastName = SanitizeUnicode(u.LastName)
 	u.Nickname = SanitizeUnicode(u.Nickname)
 	u.BotDescription = SanitizeUnicode(u.BotDescription)
+	u.MobileNumber = SanitizeUnicode(u.MobileNumber)
 
 	u.Username = NormalizeUsername(u.Username)
 	u.Email = NormalizeEmail(u.Email)
@@ -383,6 +393,7 @@ func (u *User) PreUpdate() {
 	u.LastName = SanitizeUnicode(u.LastName)
 	u.Nickname = SanitizeUnicode(u.Nickname)
 	u.BotDescription = SanitizeUnicode(u.BotDescription)
+	u.Position = SanitizeUnicode(u.Position)
 
 	if u.AuthData != nil && *u.AuthData == "" {
 		u.AuthData = nil
@@ -485,6 +496,10 @@ func (u *User) Patch(patch *UserPatch) {
 
 	if patch.Timezone != nil {
 		u.Timezone = patch.Timezone
+	}
+
+	if patch.MobileNumber != nil {
+		u.MobileNumber = *patch.MobileNumber
 	}
 }
 

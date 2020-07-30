@@ -172,6 +172,7 @@ func init() {
 	UserCreateCmd.Flags().String("lastname", "", "Optional. The last name for the new user account.")
 	UserCreateCmd.Flags().String("locale", "", "Optional. The locale (ex: en, fr) for the new user account.")
 	UserCreateCmd.Flags().Bool("system_admin", false, "Optional. If supplied, the new user will be a system administrator. Defaults to false.")
+	UserCreateCmd.Flags().String("mobile_number", "", "Required. The mobile number for the new user account.")
 
 	UserConvertCmd.Flags().Bool("bot", false, "If supplied, convert users to bots.")
 	UserConvertCmd.Flags().Bool("user", false, "If supplied, convert a bot to a user.")
@@ -358,15 +359,20 @@ func userCreateCmdF(command *cobra.Command, args []string) error {
 	lastname, _ := command.Flags().GetString("lastname")
 	locale, _ := command.Flags().GetString("locale")
 	systemAdmin, _ := command.Flags().GetBool("system_admin")
+	mobileNumber, errm := command.Flags().GetString("mobile_number")
+	if errm != nil || mobileNumber == "" {
+		return errors.New("Mobile number is required")
+	}
 
 	user := &model.User{
-		Username:  username,
-		Email:     email,
-		Password:  password,
-		Nickname:  nickname,
-		FirstName: firstname,
-		LastName:  lastname,
-		Locale:    locale,
+		Username:     username,
+		Email:        email,
+		Password:     password,
+		Nickname:     nickname,
+		FirstName:    firstname,
+		LastName:     lastname,
+		Locale:       locale,
+		MobileNumber: mobileNumber,
 	}
 
 	ruser, err := a.CreateUser(user)
@@ -393,6 +399,7 @@ func userCreateCmdF(command *cobra.Command, args []string) error {
 	CommandPrettyPrintln("first_name: " + ruser.FirstName)
 	CommandPrettyPrintln("last_name: " + ruser.LastName)
 	CommandPrettyPrintln("email: " + ruser.Email)
+	CommandPrettyPrintln("mobile_number: " + ruser.MobileNumber)
 	CommandPrettyPrintln("auth_service: " + ruser.AuthService)
 
 	auditRec := a.MakeAuditRecord("userCreate", audit.Success)

@@ -987,6 +987,42 @@ LOCK TABLES `UserAccessTokens` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `Dealer`
+--
+
+DROP TABLE IF EXISTS `Dealer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Dealer` (
+  `Id` varchar(26) NOT NULL,
+  `CreateAt` bigint(20) DEFAULT NULL,
+  `UpdateAt` bigint(20) DEFAULT NULL,
+  `DeleteAt` bigint(20) DEFAULT NULL,
+  `Name` varchar(64) DEFAULT NULL,
+  `PhoneNumber` varchar(32) DEFAULT NULL,
+  `Address` varchar(255) DEFAULT NULL,
+  `City` varchar(64) DEFAULT NULL,
+  `Province` varchar(32) DEFAULT NULL,
+  `Country` varchar(10) DEFAULT NULL,
+  `PostalCode` varchar(10) DEFAULT NULL,
+  `Brands` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `idx_dealer_update_at` (`UpdateAt`),
+  KEY `idx_dealer_create_at` (`CreateAt`),
+  KEY `idx_dealer_delete_at` (`DeleteAt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Dealer`
+--
+
+LOCK TABLES `Dealer` WRITE;
+/*!40000 ALTER TABLE `Dealer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Dealer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Users`
 --
 
@@ -1019,6 +1055,8 @@ CREATE TABLE `Users` (
   `Timezone` text,
   `MfaActive` tinyint(1) DEFAULT NULL,
   `MfaSecret` varchar(128) DEFAULT NULL,
+  `MobileNumber` varchar(32) DEFAULT NULL,
+  `DealerId` varchar(26) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Username` (`Username`),
   UNIQUE KEY `AuthData` (`AuthData`),
@@ -1027,6 +1065,7 @@ CREATE TABLE `Users` (
   KEY `idx_users_update_at` (`UpdateAt`),
   KEY `idx_users_create_at` (`CreateAt`),
   KEY `idx_users_delete_at` (`DeleteAt`),
+  KEY `idx_users_dealer_id` (`DealerId`)
   FULLTEXT KEY `idx_users_all_txt` (`Username`,`FirstName`,`LastName`,`Nickname`,`Email`),
   FULLTEXT KEY `idx_users_all_no_full_name_txt` (`Username`,`Nickname`,`Email`),
   FULLTEXT KEY `idx_users_names_txt` (`Username`,`FirstName`,`LastName`,`Nickname`),
